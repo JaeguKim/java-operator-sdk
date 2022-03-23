@@ -60,18 +60,15 @@ class MySQLSchemaOperatorE2E {
   }
 
   @RegisterExtension
-  @SuppressWarnings("unchecked")
   AbstractOperatorExtension operator =
       isLocal()
           ? OperatorExtension.builder()
               .withReconciler(
                   new MySQLSchemaReconciler(),
-                  c -> {
-                    c.replaceDependentResourceConfig(
-                        SchemaDependentResource.class,
-                        new ResourcePollerConfig(
-                            700, new MySQLDbConfig("127.0.0.1", "3307", "root", "password")));
-                  })
+                  c -> c.replaceNamedDependentResourceConfig(
+                      SchemaDependentResource.NAME,
+                      new ResourcePollerConfig(
+                          700, new MySQLDbConfig("127.0.0.1", "3307", "root", "password"))))
               .withInfrastructure(infrastructure)
               .withPortForward(MY_SQL_NS, "app", "mysql", 3306, 3307)
               .build()
